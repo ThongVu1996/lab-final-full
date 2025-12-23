@@ -1,17 +1,31 @@
 apiVersion: batch/v1
 kind: Job
 metadata:
+  # Thêm random suffix hoặc revision để tránh trùng tên nếu job cũ chưa xóa kịp
   name: {{ .Release.Name }}-migrate-{{ .Release.Revision }}
   annotations:
-    "helm.sh/hook": pre-install,pre-upgrade
-    "helm.sh/hook-delete-policy": hook-succeeded
+    # 1. QUAN TRỌNG: Đổi sang post-install để chạy SAU KHI Database và Service đã lên
+    "helm.sh/hook": post-install,post-upgrade
+    
+    # 2. Thêm before-hook-creation để xóa Job rác cũ trước khi chạy cái mới
+    "helm.sh/hook-delete-policy": hook-succeeded,before-hook-creation
+    
+    # 3. (Tùy chọn) Đặt weight để đảm bảo thứ tự nếu có nhiều hook
+    "helm.sh/hook-weight": "0"
+
 spec:
+  # 4. Cho phép thử lại tối đa 5 lần nếu Database khởi động chậm
+  backoffLimit: 5
+  
   template:
     spec:
-      restartPolicy: Never
+      # 5. Đổi Never -> OnFailure để nếu kết nối DB lỗi, nó sẽ tự khởi động lại Pod thay vì báo Failed ngay
+      restartPolicy: OnFailure 
+      
       containers:
       - name: migrate
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        imagePullPolicy: Always
         command: ["php", "artisan", "migrate", "--force"]
         envFrom:
           - secretRef:
