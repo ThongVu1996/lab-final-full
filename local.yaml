@@ -1,0 +1,27 @@
+apiVersion: argoproj.io/v1alpha1
+kind: Application
+metadata:
+  name: yorisoi-local
+  namespace: argocd
+spec:
+  project: default
+  source:
+    # 1. Trỏ về Harbor
+    repoURL: 'harbor.local.thongdev.site/lab-final'
+    # 2. Chọn CHART GÓI (Wrapper) thay vì Chart Gốc
+    chart: yorisoi-local 
+    # 3. Version động
+    targetRevision: '0.1.*'
+    
+    # KHÔNG CẦN helm: values Ở ĐÂY NỮA
+    # Vì mọi thứ đã nằm trong yorisoi-local/values.yaml rồi
+  
+  destination:
+    server: 'https://kubernetes.default.svc'
+    namespace: yorisoi-local
+  syncPolicy:
+    automated:
+      prune: true
+      selfHeal: true
+    syncOptions:
+      - CreateNamespace=true

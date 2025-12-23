@@ -1,0 +1,21 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: {{ .Release.Name }}-migrate-{{ .Release.Revision }}
+  annotations:
+    "helm.sh/hook": pre-install,pre-upgrade
+    "helm.sh/hook-delete-policy": hook-succeeded
+spec:
+  template:
+    spec:
+      restartPolicy: Never
+      containers:
+      - name: migrate
+        image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
+        command: ["php", "artisan", "migrate", "--force"]
+        envFrom:
+          - secretRef:
+              name: {{ .Values.existingSecret }}
+        env:
+          - name: DB_HOST
+            value: {{ .Values.backend.env.DB_HOST | quote }}

@@ -1,0 +1,7 @@
+apiVersion: v2
+name: yorisoi-aws
+version: 0.1.0
+dependencies:
+  - name: yorisoi-stack
+    version: "0.1.0"
+    repository: "file://../../charts/yorisoi-stack"

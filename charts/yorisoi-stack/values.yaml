@@ -1,0 +1,31 @@
+# --- MẶC ĐỊNH (BASE) ---
+backend:
+  name: backend
+  replicaCount: 1
+  image:
+    repository: "" 
+    tag: "latest"
+  env:
+    APP_ENV: "production"
+    APP_DEBUG: "false"
+    DB_HOST: "mysql-svc"
+
+frontend:
+  name: frontend
+  replicaCount: 1
+  image:
+    repository: ""
+    tag: "latest"
+  env:
+    API_URL: "/admin"
+
+mysql:
+  enabled: false # Mặc định TẮT (Cho AWS dùng RDS)
+  name: mysql
+  image: mysql:8.0
+  storageSize: 5Gi
+
+ingress:
+  enabled: true
+  className: "nginx"
+  host: "localhost" # Placeholder

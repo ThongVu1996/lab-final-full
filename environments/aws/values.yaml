@@ -1,0 +1,23 @@
+yorisoi-stack:
+  backend:
+    replicaCount: 2
+    image:
+      repository: 123456789.dkr.ecr.us-east-1.amazonaws.com/backend
+      tag: "v1.0.0"
+    env:
+      APP_ENV: "production"
+      APP_URL: "https://dr.thongdev.site"
+      DB_HOST: "yorisoi-db.cxyz.us-east-1.rds.amazonaws.com" # RDS
+
+  frontend:
+    image:
+      repository: 123456789.dkr.ecr.us-east-1.amazonaws.com/frontend
+      tag: "v1.0.0"
+    env:
+      API_URL: "/admin"
+
+  mysql:
+    enabled: false # <--- TẮT MySQL (Dùng RDS)
+
+  ingress:
+    host: "dr.thongdev.site"

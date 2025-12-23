@@ -1,0 +1,12 @@
+apiVersion: v2
+name: yorisoi-local
+description: Wrapper Chart for Local Environment
+type: application
+version: 0.1.0
+appVersion: "1.0.0"
+
+dependencies:
+  - name: yorisoi-stack
+    version: "0.1.0"
+    # Khi build ở Jenkins, nó sẽ tìm folder bên cạnh
+    repository: "file://../yorisoi-stack"

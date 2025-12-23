@@ -1,0 +1,27 @@
+# Ghi đè cấu hình của chart cha
+yorisoi-stack:
+  backend:
+    image:
+      repository: harbor.local.thongdev.site/lab-final/backend
+      tag: "v1.0.0"
+    env:
+      APP_ENV: "local"
+      APP_DEBUG: "true"
+      # URL local giả lập production
+      APP_URL: "http://dr.thongdev.site"
+      DB_HOST: "mysql-svc"
+
+  frontend:
+    image:
+      repository: harbor.local.thongdev.site/lab-final/frontend
+      tag: "v1.0.0"
+    env:
+      # Frontend gọi Backend qua /admin
+      API_URL: "/admin"
+
+  mysql:
+    enabled: true  # <--- BẬT MySQL Local
+    storageSize: 2Gi
+
+  ingress:
+    host: "dr.thongdev.site"

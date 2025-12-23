@@ -1,0 +1,12 @@
+{{- if .Values.mysql.enabled }}
+apiVersion: v1
+kind: Service
+metadata:
+  name: {{ .Values.mysql.name }}-svc
+spec:
+  ports:
+  - port: 3306
+  selector:
+    app: {{ .Values.mysql.name }}
+  clusterIP: None
+{{- end }}
