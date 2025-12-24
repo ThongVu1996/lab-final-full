@@ -13,8 +13,8 @@ pipeline {
         
         // --- 3. CẤU HÌNH GIT REPO (MULTI-REPO) ---
         // Đường dẫn Git của Frontend và Backend
-        GIT_URL_FRONTEND    = "https://gitlab.local.thongdev.site/tonylab/yorisoi-admin.git" 
-        GIT_URL_BACKEND     = "https://gitlab.local.thongdev.site/tonylab/yorisoi-api.git"
+        GIT_URL_FRONTEND    = "https://gitlab.local.thongdev.site/tonylab/frontend.git"
+        GIT_URL_BACKEND     = "https://gitlab.local.thongdev.site/tonylab/backend.git"
         
         // Branch cần build (thường là main hoặc master)
         GIT_BRANCH          = "main"
