@@ -1,17 +1,21 @@
 yorisoi-stack:
+  existingSecret: "yorisoi-secret"
   backend:
-    replicaCount: 2
+    replicaCount: 1
     image:
-      repository: 123456789.dkr.ecr.us-east-1.amazonaws.com/backend
+      repository: 605695176329.dkr.ecr.ap-southeast-1.amazonaws.com/lab-final/backend
+      tag: "v1.0.0"
+    nginxImage:
+      repository: 605695176329.dkr.ecr.ap-southeast-1.amazonaws.com/lab-final/nginx-backend
       tag: "v1.0.0"
     env:
       APP_ENV: "production"
       APP_URL: "https://dr.thongdev.site"
-      DB_HOST: "yorisoi-db.cxyz.us-east-1.rds.amazonaws.com" # RDS
+      DB_HOST: "lab-final-db.cn46i6qw2flt.ap-southeast-1.rds.amazonaws.com"
 
   frontend:
     image:
-      repository: 123456789.dkr.ecr.us-east-1.amazonaws.com/frontend
+      repository: 605695176329.dkr.ecr.ap-southeast-1.amazonaws.com/lab-final/frontend
       tag: "v1.0.0"
     env:
       API_URL: "/api "

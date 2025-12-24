@@ -7,7 +7,7 @@ spec:
   project: default
   source:
     # 1. Trỏ về Git
-    repoURL: 'https://github.com/thongdev/yorisoi-infra.git'
+    repoURL: 'https://github.com/ThongVu1996/lab-final'
     targetRevision: main
     # 2. Trỏ vào folder AWS
     path: environments/aws
