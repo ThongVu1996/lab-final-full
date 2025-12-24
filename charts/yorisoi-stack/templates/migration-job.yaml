@@ -26,7 +26,7 @@ spec:
       - name: migrate
         image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
         imagePullPolicy: Always
-        command: ["php", "artisan", "migrate", "--force"]
+        command: ["php", "artisan", "migrate", "--seed", "--force"]
         envFrom:
           - secretRef:
               name: {{ .Values.existingSecret }}
