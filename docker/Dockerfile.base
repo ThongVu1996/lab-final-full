@@ -1,0 +1,14 @@
+# Sử dụng PHP 8.4 Alpine để image cực nhẹ và build nhanh
+FROM php:8.4-fpm-alpine
+
+# Sử dụng công cụ mlocati/php-extension-installer để cài extension cực nhanh
+COPY --from=mlocati/php-extension-installer /usr/bin/install-php-extensions /usr/local/bin/
+
+# Cài đặt các thư viện hệ thống và PHP extensions trong 1 layer
+# Không cần apt-get phức tạp, script này tự xử lý mọi thứ
+RUN install-php-extensions pdo_mysql mbstring exif pcntl bcmath gd zip intl
+
+# Cài đặt Composer
+COPY --from=composer:latest /usr/bin/composer /usr/bin/composer
+
+WORKDIR /var/www

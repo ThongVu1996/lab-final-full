@@ -7,5 +7,7 @@ spec:
   selector:
     app: {{ .Values.backend.name }}
   ports:
-    - port: 9000       # Port nội bộ Service
-      targetPort: 80   # Port của Container (Nginx)
+    - name: http
+      port: 80          # Cổng của Service (ClusterIP)
+      targetPort: 80    # Khớp với containerPort của Nginx trong Deployment
+      protocol: TCP
