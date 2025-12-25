@@ -242,30 +242,40 @@ pipeline {
                 }
             }
         }
+        
         stage('09. GitOps (AWS)') {
-            // Kiểm tra biến Global
             when { expression { return isAwsDeploy } }
             steps {
                 script {
-                    dir('github-infra/environments/aws') {
-                        sh "sed -i 's|tag: \".*\"|tag: \"${BUILD_VERSION}\"|' values.yaml"
+                    // Đứng ở root repo (github-infra) để thao tác toàn cục
+                    dir('github-infra') {
+                        
+                        // 1. Update tag
+                        sh "sed -i 's|tag: \".*\"|tag: \"${BUILD_VERSION}\"|' environments/aws/values.yaml"
+
+                        // 2. XÓA file/folder KHÔNG CẦN THIẾT (Cleanup)
+                        // Xóa local.yaml
+                        sh "rm -f local.yaml"
+                        // Xóa folder charts/yorisoi-local
+                        sh "rm -rf charts/yorisoi-local"
 
                         withCredentials([
                             usernamePassword(credentialsId: GITHUB_CREDS, usernameVariable: 'U', passwordVariable: 'P')
                         ]) {
                             sh """
-                                # 1. Cấu hình danh tính cho Git (Bắt buộc)
                                 git config --global user.email "jenkins-bot@lab.com"
                                 git config --global user.name "Jenkins Bot"
 
-                                # 2. Thực hiện commit
-                                git add values.yaml
-                                git commit -m 'chore(aws): deploy ${BUILD_VERSION} [skip ci]'
-                                
-                                # 3. Push
-                                # Lưu ý: Dùng \\${U} và \\${P} (có dấu gạch chéo) để lấy biến môi trường
-                                # Tránh dùng \${U} trực tiếp để không bị Warning bảo mật của Jenkins
-                                git push https://\${U}:\${P}@github.com/ThongVu1996/lab-final.git main
+                                # 3. Git Add . (Thêm cả file sửa và file đã xóa vào staging)
+                                git add .
+
+                                # 4. Commit & Push
+                                if ! git diff-index --quiet HEAD; then
+                                    git commit -m 'chore(aws): deploy ${BUILD_VERSION} & cleanup [skip ci]'
+                                    git push https://\${U}:\${P}@github.com/ThongVu1996/lab-final.git main
+                                else
+                                    echo "Nothing to commit"
+                                fi
                             """
                         }
                     }
