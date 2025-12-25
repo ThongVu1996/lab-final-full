@@ -231,58 +231,51 @@ pipeline {
         //     }
         // }
           
-        stage('07. Push Base (AWS)') { // Đổi tên từ Build -> Push/Promote
+        stage('07. Push Base (Skopeo)') {
             when {
                 allOf {
+                    // Kiểm tra biến Global
                     expression { return isAwsDeploy }
                     expression { return isBaseChanged }
                 }
             }
             steps {
                 script {
-                    echo "🚀 Promoting Base Image from Harbor to ECR..."
+                    echo "🚀 [Skopeo] Promoting Base Image from Harbor to ECR..."
                     
-                    // Lệnh này copy toàn bộ manifest (cả arm64 và amd64) cực nhanh
-                    sh """
-                        docker buildx imagetools create \
-                        --tag ${IMG_BASE_ECR}:latest \
-                        ${IMG_BASE_HARBOR}:latest
-                    """
+                    // --all: Copy cả AMD64 và ARM64 (Multi-arch)
+                    // docker://: Giao thức bắt buộc của Skopeo
+                    sh "skopeo copy --all docker://${IMG_BASE_HARBOR}:latest docker://${IMG_BASE_ECR}:latest"
                 }
             }
         }
 
-        stage('08. Push Apps (AWS)') { // Đổi tên từ Build -> Push/Promote
+        stage('08. Push Apps (Skopeo)') {
+            // Kiểm tra biến Global
             when { expression { return isAwsDeploy } }
             steps {
                 script {
-                    echo "🚀 Promoting App Images from Harbor to ECR..."
-                    
-                    // 1. Frontend
-                    sh """
-                        docker buildx imagetools create \
-                        --tag ${IMG_FE_ECR}:${BUILD_VERSION} \
-                        --tag ${IMG_FE_ECR}:latest \
-                        ${IMG_FE_HARBOR}:${BUILD_VERSION}
-                    """
+                    echo "🚀 [Skopeo] Promoting App Images from Harbor to ECR..."
 
-                    // 2. Backend
-                    // Lưu ý: Backend Local đã được build dựa trên Base Harbor. 
-                    // Copy sang ECR vẫn chạy tốt vì layers đã được đóng gói bên trong.
-                    sh """
-                        docker buildx imagetools create \
-                        --tag ${IMG_BE_ECR}:${BUILD_VERSION} \
-                        --tag ${IMG_BE_ECR}:latest \
-                        ${IMG_BE_HARBOR}:${BUILD_VERSION}
-                    """
+                    // ==============================
+                    // 1. FRONTEND
+                    // ==============================
+                    // Copy từ Harbor -> ECR (Tag Version)
+                    sh "skopeo copy --all docker://${IMG_FE_HARBOR}:${BUILD_VERSION} docker://${IMG_FE_ECR}:${BUILD_VERSION}"
+                    // Copy nội bộ ECR -> ECR (Để tạo tag Latest - cực nhanh)
+                    sh "skopeo copy --all docker://${IMG_FE_ECR}:${BUILD_VERSION} docker://${IMG_FE_ECR}:latest"
 
-                    // 3. Nginx
-                    sh """
-                        docker buildx imagetools create \
-                        --tag ${IMG_NGINX_ECR}:${BUILD_VERSION} \
-                        --tag ${IMG_NGINX_ECR}:latest \
-                        ${IMG_NGINX_HARBOR}:${BUILD_VERSION}
-                    """
+                    // ==============================
+                    // 2. BACKEND
+                    // ==============================
+                    sh "skopeo copy --all docker://${IMG_BE_HARBOR}:${BUILD_VERSION} docker://${IMG_BE_ECR}:${BUILD_VERSION}"
+                    sh "skopeo copy --all docker://${IMG_BE_ECR}:${BUILD_VERSION} docker://${IMG_BE_ECR}:latest"
+
+                    // ==============================
+                    // 3. NGINX
+                    // ==============================
+                    sh "skopeo copy --all docker://${IMG_NGINX_HARBOR}:${BUILD_VERSION} docker://${IMG_NGINX_ECR}:${BUILD_VERSION}"
+                    sh "skopeo copy --all docker://${IMG_NGINX_ECR}:${BUILD_VERSION} docker://${IMG_NGINX_ECR}:latest"
                     
                     echo "✅ All Images promoted to AWS ECR successfully!"
                 }
