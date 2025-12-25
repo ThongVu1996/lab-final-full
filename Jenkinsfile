@@ -192,45 +192,6 @@ pipeline {
             }
         }
 
-        // stage('07. Build Base (AWS)') {
-        //     when {
-        //         allOf {
-        //             // Kiểm tra biến Global
-        //             expression { return isAwsDeploy }
-        //             expression { return isBaseChanged }
-        //         }
-        //     }
-        //     steps {
-        //         sh """
-        //           docker buildx build --platform linux/amd64,linux/arm64 \
-        //           -f docker/Dockerfile.base \
-        //           -t ${IMG_BASE_ECR}:latest \
-        //           --push .
-        //         """
-        //     }
-        // }
-        //
-        // stage('08. Build Apps (AWS)') {
-        //     // Kiểm tra biến Global
-        //     when { expression { return isAwsDeploy } }
-        //     steps {
-        //         script {
-        //             dir('frontend-src') {
-        //                 sh "docker buildx build --platform linux/amd64,linux/arm64 -t ${IMG_FE_ECR}:${BUILD_VERSION} -t ${IMG_FE_ECR}:latest --push ."
-        //             }
-        //             dir('backend-src') {
-        //                 sh """
-        //                   docker buildx build --platform linux/amd64,linux/arm64 \
-        //                   --build-arg BASE_IMAGE_URL=${IMG_BASE_ECR}:latest \
-        //                   -t ${IMG_BE_ECR}:${BUILD_VERSION} -t ${IMG_BE_ECR}:latest \
-        //                   --push .
-        //                 """
-        //                 sh "docker buildx build --platform linux/amd64,linux/arm64 -f docker/nginx/Dockerfile -t ${IMG_NGINX_ECR}:${BUILD_VERSION} -t ${IMG_NGINX_ECR}:latest --push ."
-        //             }
-        //         }
-        //     }
-        // }
-          
         stage('07. Push Base (Skopeo)') {
             when {
                 allOf {
@@ -293,9 +254,18 @@ pipeline {
                             usernamePassword(credentialsId: GITHUB_CREDS, usernameVariable: 'U', passwordVariable: 'P')
                         ]) {
                             sh """
-                              git add values.yaml
-                              git commit -m 'chore(aws): deploy ${BUILD_VERSION} [skip ci]'
-                              git push https://${U}:${P}@github.com/ThongVu1996/lab-final.git main
+                                # 1. Cấu hình danh tính cho Git (Bắt buộc)
+                                git config --global user.email "jenkins-bot@lab.com"
+                                git config --global user.name "Jenkins Bot"
+
+                                # 2. Thực hiện commit
+                                git add values.yaml
+                                git commit -m 'chore(aws): deploy ${BUILD_VERSION} [skip ci]'
+                                
+                                # 3. Push
+                                # Lưu ý: Dùng \\${U} và \\${P} (có dấu gạch chéo) để lấy biến môi trường
+                                # Tránh dùng \${U} trực tiếp để không bị Warning bảo mật của Jenkins
+                                git push https://\${U}:\${P}@github.com/ThongVu1996/lab-final.git main
                             """
                         }
                     }
