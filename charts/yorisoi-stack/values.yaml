@@ -2,6 +2,8 @@
 backend:
   name: backend
   replicaCount: 1
+  servicePort: 80
+  containerPort: 80
   image:
     repository: "" 
     tag: "latest"
@@ -16,6 +18,8 @@ backend:
 frontend:
   name: frontend
   replicaCount: 1
+  servicePort: 80
+  containerPort: 80
   image:
     repository: ""
     tag: "latest"
@@ -27,6 +31,9 @@ mysql:
   name: mysql
   image: mysql:8.0
   storageSize: 5Gi
+
+migration:
+  backoffLimit: 5
 
 ingress:
   enabled: true

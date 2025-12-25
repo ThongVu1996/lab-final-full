@@ -16,19 +16,22 @@ spec:
         backend:
           service:
             name: {{ .Values.backend.name }}-svc
-            port: { number: 9000 }
+            port: 
+              number: {{ .Values.backend.servicePort }}
       # 2. Backend nhận /api (Chuẩn Laravel)
       - path: /user
         pathType: Prefix
         backend:
           service:
             name: {{ .Values.backend.name }}-svc
-            port: { number: 9000 }
+            port: 
+              number: {{ .Values.backend.servicePort }}
       # 3. Frontend nhận phần còn lại
       - path: /
         pathType: Prefix
         backend:
           service:
             name: {{ .Values.frontend.name }}-svc
-            port: { number: 80 }
+            port: 
+              number: {{ .Values.frontend.servicePort }}
 {{- end }}

@@ -26,6 +26,12 @@ yorisoi-stack:
   mysql:
     enabled: true  # <--- BẬT MySQL Local
     storageSize: 2Gi
+    containerPort: 3306
+    servicePort: 3306
+    defaultPort: 3306
+    backoffLimit: 5
+    hostPath: "/data/mysql-pv"
+    nodeHostName: k8s-master-2
 
   ingress:
     host: "dr.thongdev.site"

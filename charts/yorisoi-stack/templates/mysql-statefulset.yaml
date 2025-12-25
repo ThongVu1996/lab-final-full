@@ -18,7 +18,7 @@ spec:
       - name: mysql
         image: {{ .Values.mysql.image }}
         ports:
-        - containerPort: 3306
+        - containerPort: {{ .Values.mysql.containerPort }}
         env:
         - name: MYSQL_ROOT_PASSWORD
           valueFrom:

@@ -8,6 +8,6 @@ spec:
     app: {{ .Values.backend.name }}
   ports:
     - name: http
-      port: 80          # Cổng của Service (ClusterIP)
-      targetPort: 80    # Khớp với containerPort của Nginx trong Deployment
+      port: {{ .Values.backend.servicePort }}          # Cổng của Service (ClusterIP)
+      targetPort: {{ .Values.backend.containerPort }}    # Khớp với containerPort của Nginx trong Deployment
       protocol: TCP

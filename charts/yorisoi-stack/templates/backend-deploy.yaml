@@ -17,7 +17,7 @@ spec:
           image: "{{ .Values.backend.image.repository }}:{{ .Values.backend.image.tag }}"
           imagePullPolicy: Always
           ports:
-            - containerPort: 80 # Nginx trong container mở cổng 80
+            - containerPort: {{ .Values.backend.containerPort }} # Nginx trong container mở cổng 80
           env:
             # 1. Config từ values.yaml
             - name: APP_ENV

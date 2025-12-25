@@ -15,7 +15,7 @@ metadata:
 
 spec:
   # 4. Cho phép thử lại tối đa 5 lần nếu Database khởi động chậm
-  backoffLimit: 5
+  backoffLimit: {{ .Values.migration.backoffLimit }}
   
   template:
     spec:

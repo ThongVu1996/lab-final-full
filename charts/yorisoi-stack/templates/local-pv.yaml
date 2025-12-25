@@ -1,4 +1,5 @@
 # charts/yorisoi-stack/templates/local-pv.yaml
+{{- if .Values.mysql.enabled }}
 apiVersion: v1
 kind: PersistentVolume
 metadata:
@@ -12,7 +13,7 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: "/data/mysql-pv" # K8s sẽ tự trỏ vào thư mục này trên node
+    path: {{ .Values.mysql.hostPath }} # K8s sẽ tự trỏ vào thư mục này trên node
   # Quan trọng: Quy định PV này thuộc về Node nào (để tránh nó chạy lung tung sang node không có thư mục)
   nodeAffinity:
     required:
@@ -21,4 +22,5 @@ spec:
         - key: kubernetes.io/hostname
           operator: In
           values:
-          - k8s-master-2 # <--- Điền tên Node mà bạn muốn chứa dữ liệu (Node đang chạy ổn định)
+          - {{ .Values.mysql.nodeHostname | quote }}# <--- Điền tên Node mà bạn muốn chứa dữ liệu (Node đang chạy ổn định)
+{{- end }}

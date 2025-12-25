@@ -5,7 +5,7 @@ metadata:
   name: {{ .Values.mysql.name }}-svc
 spec:
   ports:
-  - port: 3306
+  - port: {{ .Values.mysql.defaultPort }}
   selector:
     app: {{ .Values.mysql.name }}
   clusterIP: None
