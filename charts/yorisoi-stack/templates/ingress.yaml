@@ -4,8 +4,9 @@ kind: Ingress
 metadata:
   name: yorisoi-ingress
   annotations:
-    kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
+    # kubernetes.io/ingress.class: {{ .Values.ingress.className | quote }}
 spec:
+  ingressClassName: {{ .Values.ingress.className | default "nginx" | quote }}
   rules:
   - host: {{ .Values.ingress.host }}
     http:

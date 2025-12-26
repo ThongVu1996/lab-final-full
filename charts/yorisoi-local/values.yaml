@@ -14,7 +14,7 @@ yorisoi-stack:
       # URL local giả lập production
       APP_URL: "http://dr.thongdev.site"
       DB_HOST: "mysql-svc"
-
+      DB_CONNECTION: "mysql"
   frontend:
     image:
       repository: harbor.local.thongdev.site/lab-final/frontend
@@ -35,3 +35,5 @@ yorisoi-stack:
 
   ingress:
     host: "dr.thongdev.site"
+    className: "nginx"
+    enabled: true
